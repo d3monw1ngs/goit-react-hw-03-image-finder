@@ -1,35 +1,44 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import styles from './Searchbar.module.css';
 
-export const Searchbar = ({ onSubmit }) => {
-    const [query, setQuery] = useState('');
-
-    const handleChange = (event) => {
-        setQuery(event.target.value);
+export class Searchbar extends Component {
+    static propTypes = {
+        onSubmit: PropTypes.func.isRequired,
     };
 
-    const handleSubmit = (event) => {
+    state = { query: '' };
+    
+    handleChange = (event) => {
+        this.setState({ query: event.target.value });
+    };
+
+     handleSubmit = (event) => {
         event.preventDefault();
-        onSubmit(query);
-        setQuery('');
+        this.props.onSubmit(this.state.query);
+        this.setState({ query: '' });
     };
 
-  return (
-    <header className="searchbar">
-        <form className="form" onSubmit={handleSubmit}>
-            <button type="submit" className="button">
-            <span className="button-label">Search</span>
-            </button>
+    render() {
 
-            <input
-            className="input"
-            type="text"
-            value={query}
-            onChange={handleChange}
-            autocomplete="off"
-            autofocus
-            placeholder="Search images and photos"
-            />
-        </form>
-    </header>
-  );
-};
+        return (
+          <header className={styles.searchbar}>
+              <form className={styles.form} onSubmit={this.handleSubmit}>
+                  <button type="submit" className={styles.button}>
+                  <span className={styles.buttonLabel}>Search</span>
+                  </button>
+      
+                  <input
+                  className={styles.input}
+                  type="text"
+                  value={this.state.query}
+                  onChange={this.handleChange}
+                  autoComplete="off"
+                  autoFocus
+                  placeholder="Search images and photos"
+                  />
+              </form>
+          </header>
+        );
+    }
+}

@@ -1,57 +1,70 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
-import { Modal } from './Modal/Modal';
 import { getAPI } from '../pixabay-api';
-
-
+import styles from './App.module.css';
 
 export class App extends Component {
   state = {
     images: [],
     query: '',
-    page: 1,
-    loading: false,
-    showModal: false,
-    largeImageURL: '',
+    currentPage: 1,
+    isLoading: false,
+    isError: false,
+    isEnd: false,
   };
 
-  componentDidUpdate(_prevProps, prevState) {
-    if (prevState.query !== this.state.query || prevState.page !== this.state.page) {
-      this.fetchImages();
+  async componentDidUpdate(_prevProps, prevState) {
+    const { query, currentPage } = this.state;
+
+    if (prevState.query !== query || prevState.currentPage !== currentPage) {
+      await this.fetchImages();
     }
   }
 
   fetchImages = async () => {
-    const { query, page } = this.state;
-    if (!query) return;
+    this.setState({ isLoading: true});
 
-    this.setState({ loading: true });
+    const { query, currentPage } = this.state;
+
     try {
-      const response = await getAPI( query, page );
-      this.setState((prevState) => ({
-        images: [...prevState.images, ...response.data.hits],
-        loading: false
+      const response = await getAPI( query, currentPage );
+      console.log(response);
+      const { totalHits, hits } = response;
+
+      this.setState(prevState => ({
+        images: currentPage === 1 ? hits: [...prevState.images, ...hits],
+        isLoading: false,
+        isEnd: prevState.images.length + hits.length >= totalHits,
       }));
+     
+
+      if(hits.length === 0) {
+        alert('No images found. Try a different search.');
+        return;
+      } 
     } catch (error) {
-      console.error('Error fetching images:', error);
-      this.setState({ loading: false });
-    }
-  };
+      this.setState({ isError: true });
+      alert(`Error fetching images: ${error}`);
+      } finally {
+        this.setState({ isLoading: false });
+      }
+    };
 
   handleSearch = (newQuery) => {
     this.setState({
       query: newQuery,
       images: [],
-      page: 1
+      currentPage: 1,
+      isEnd: false,
     });
   };
 
   handleLoadMore = () => {
     this.setState((prevState) => ({
-      page: prevState.page + 1
+      currentPage: prevState.currentPage + 1,
     }));
   };
 
@@ -70,16 +83,16 @@ export class App extends Component {
   };
 
   render() {
-    const { images, loading, showModal, largeImageURL } = this.state;
+    const { images, isLoading, isError, isEnd } = this.state;
 
     return (
-      <div className="app">
+      <div className={styles.app}>
         <Searchbar onSubmit={this.handleSearch} />
         <ImageGallery images={images} onImageClick={this.handleImageClick} />
-        {loading && <Loader />}
-        {images.length > 0 && !loading && <Button onClick={this.handleLoadMore} />}
-        {showModal && <Modal largeImageURL={largeImageURL} onClose={this.handleCloseModal} />}
-      </div>
+        {isLoading && <Loader />}
+        {isError && <p>Error fetching images. Please try again.</p>}
+        {isLoading && images.length > 0 && !isEnd && <Button onClick={this.handleLoadMore} />}
+        </div>
     );
   }; 
 };
