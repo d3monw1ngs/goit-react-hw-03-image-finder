@@ -18,19 +18,19 @@ export class ImageGalleryItem extends Component {
     this.props.onImageClick(largeImageURL);
   };
 
-  // state = {
-  //   showModal: false,
-  // };
+  state = {
+    showModal: false,
+  };
 
-  // toggleModal = () => {
-  //   this.setState(prevState => ({
-  //     showModal: !prevState.showModal,
-  //   }));
-  // };
+  toggleModal = () => {
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,
+    }));
+  };
 
   render() {
-    const { webformatURL, tags } = this.props.image;
-    // const { showModal } = this.state;
+    const { webformatURL, tags, largeImageURL } = this.props.image;
+    const { showModal } = this.state;
 
     return (
       <li className={styles.galleryItem} onClick={this.handleClick}>
@@ -38,7 +38,7 @@ export class ImageGalleryItem extends Component {
           src={webformatURL} 
           alt={tags}
           />
-        {/* {showModal && <Modal image={largeImageURL} tags={tags} onClose={this.toggleModal} />} */}
+        {showModal && <Modal image={largeImageURL} tags={tags} onClose={this.toggleModal} />}
       </li>
     );
   }
