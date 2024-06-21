@@ -8,6 +8,9 @@ export class ImageGallery extends Component {
     images: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
+        webformatURL: PropTypes.string.isRequired,
+        largeImageURL: PropTypes.string.isRequired,
+        tags: PropTypes.string,
       })
     ).isRequired,
     onImageClick: PropTypes.func.isRequired,
@@ -19,13 +22,12 @@ export class ImageGallery extends Component {
     return (
       <ul className={styles.gallery}>
           {images.map((image) => (
-              <li
-                key={image.id}
-                className={styles.galleryItem}
-                onClick={() => onImageClick(image.largeImageURL)}
-              >
-              <ImageGalleryItem image={image} />
-              </li>
+            <ImageGalleryItem 
+              key={image.id}
+              image={image}
+              className={styles.galleryItem}
+              onClick={() => onImageClick(image.largeImageURL)} 
+            /> 
           ))}
       </ul>
     );

@@ -28,13 +28,11 @@ export class ImageGalleryItem extends Component {
 
     return (
       <li className={styles.galleryItem} onClick={this.toggleModal}>
-        <img src={webformatURL} alt={tags} />
-        {showModal && (
-          <Modal 
-            image={largeImageURL} 
-            tags={tags} 
-            onclose={this.toggleModal} />
-        )}
+        <img 
+          src={webformatURL} 
+          alt={tags}
+          />
+        {showModal && <Modal image={largeImageURL} tags={tags} onClose={this.toggleModal} />}
       </li>
     );
   }

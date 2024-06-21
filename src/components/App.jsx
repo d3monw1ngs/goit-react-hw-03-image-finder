@@ -3,8 +3,10 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
+import { Modal } from './Modal/Modal';
 import { getAPI } from '../pixabay-api';
 import styles from './App.module.css';
+import toast, { Toaster } from 'react-hot-toast';
 
 export class App extends Component {
   state = {
@@ -14,9 +16,11 @@ export class App extends Component {
     isLoading: false,
     isError: false,
     isEnd: false,
+    showModal: false,
+    largeImageURL: '',
   };
 
-  async componentDidUpdate(_prevProps, prevState) {
+  componentDidUpdate = async (_prevProps, prevState) => {
     const { query, currentPage } = this.state;
 
     if (prevState.query !== query || prevState.currentPage !== currentPage) {
@@ -25,30 +29,40 @@ export class App extends Component {
   }
 
   fetchImages = async () => {
-    this.setState({ isLoading: true});
-
-    const { query, currentPage } = this.state;
-
+    
     try {
+      this.setState({ isLoading: true});  
+      const { query, currentPage } = this.state;
       const response = await getAPI( query, currentPage );
-      console.log(response);
       const { totalHits, hits } = response;
+      console.log(response);
 
-      this.setState(prevState => ({
-        images: currentPage === 1 ? hits: [...prevState.images, ...hits],
-        isLoading: false,
-        isEnd: prevState.images.length + hits.length >= totalHits,
-      }));
-     
-
+           
+      // to display an error message when search does not match any item
       if(hits.length === 0) {
-        alert('No images found. Try a different search.');
+        toast.error('No images found. Try a different search.');
         return;
       } 
-    } catch (error) {
+
+      // to display a success message on the first page
+      if (currentPage === 1) {
+        toast.success(`Great! We found ${totalHits} images!`);
+      }
+
+      // to display message if the end of page is reached
+      if (currentPage * 12 >= totalHits) {
+        this.setState({isEnd: true});
+        toast("We're sorry, but you've reached the end of search results.")
+      }
+
+      // update the data with new images
+      this.setState(prevState => ({
+        images: [...prevState.images, ...hits],
+      }));
+
+    } catch {
       this.setState({ isError: true });
-      alert(`Error fetching images: ${error}`);
-      } finally {
+    } finally {
         this.setState({ isLoading: false });
       }
     };
@@ -65,7 +79,7 @@ export class App extends Component {
   handleLoadMore = () => {
     this.setState((prevState) => ({
       currentPage: prevState.currentPage + 1,
-    }));
+     }));
   };
 
   handleImageClick = (url) => {
@@ -78,21 +92,23 @@ export class App extends Component {
   handleCloseModal = () => {
     this.setState({
       showModal: false,
-      largeImageURL: '',
+      largeImageURL: '' ,
     });
   };
 
   render() {
-    const { images, isLoading, isError, isEnd } = this.state;
+    const { images, isLoading, isError, isEnd, showModal, largeImageURL } = this.state;
 
     return (
       <div className={styles.app}>
         <Searchbar onSubmit={this.handleSearch} />
         <ImageGallery images={images} onImageClick={this.handleImageClick} />
+        {images.length >= 1 && !isEnd && <Button onClick={this.handleLoadMore} />}
         {isLoading && <Loader />}
-        {isError && <p>Error fetching images. Please try again.</p>}
-        {isLoading && images.length > 0 && !isEnd && <Button onClick={this.handleLoadMore} />}
-        </div>
+        {isError && toast.error('Error fetching images. Please try again.')}
+        <Toaster position="top-right" reverseOrder={false} />
+        {showModal && <Modal image={largeImageURL} onClose={this.handleCloseModal} />}        
+      </div>
     );
   }; 
 };
