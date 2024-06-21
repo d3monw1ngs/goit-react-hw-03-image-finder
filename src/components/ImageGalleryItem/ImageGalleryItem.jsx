@@ -10,29 +10,35 @@ export class ImageGalleryItem extends Component {
       largeImageURL: PropTypes.string.isRequired,
       tags: PropTypes.string,
     }).isRequired,
+    onImageClick: PropTypes.func.isRequired,
   };
 
-  state = {
-    showModal: false,
+  handleClick = () => {
+    const { largeImageURL } = this.props.image;
+    this.props.onImageClick(largeImageURL);
   };
 
-  toggleModal = () => {
-    this.setState(prevState => ({
-      showModal: !prevState.showModal,
-    }));
-  };
+  // state = {
+  //   showModal: false,
+  // };
+
+  // toggleModal = () => {
+  //   this.setState(prevState => ({
+  //     showModal: !prevState.showModal,
+  //   }));
+  // };
 
   render() {
-    const { webformatURL, largeImageURL, tags } = this.props.image;
-    const { showModal } = this.state;
+    const { webformatURL, tags } = this.props.image;
+    // const { showModal } = this.state;
 
     return (
-      <li className={styles.galleryItem} onClick={this.toggleModal}>
+      <li className={styles.galleryItem} onClick={this.handleClick}>
         <img 
           src={webformatURL} 
           alt={tags}
           />
-        {showModal && <Modal image={largeImageURL} tags={tags} onClose={this.toggleModal} />}
+        {/* {showModal && <Modal image={largeImageURL} tags={tags} onClose={this.toggleModal} />} */}
       </li>
     );
   }

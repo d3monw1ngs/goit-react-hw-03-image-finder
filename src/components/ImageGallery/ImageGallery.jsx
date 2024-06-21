@@ -26,7 +26,7 @@ export class ImageGallery extends Component {
               key={image.id}
               image={image}
               className={styles.galleryItem}
-              onClick={() => onImageClick(image.largeImageURL)} 
+             onImageClick={onImageClick} 
             /> 
           ))}
       </ul>
