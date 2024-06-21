@@ -3,7 +3,7 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
-import { Modal } from './Modal/Modal';
+// import { Modal } from './Modal/Modal';
 import { getAPI } from '../pixabay-api';
 import styles from './App.module.css';
 import toast, { Toaster } from 'react-hot-toast';
@@ -82,19 +82,19 @@ export class App extends Component {
      }));
   };
 
-  handleImageClick = (url) => {
-    this.setState({
-      largeImageURL: url,
-      showModal: true,
-    });
-  };
+  // handleImageClick = (url) => {
+  //   this.setState({
+  //     largeImageURL: url,
+  //     showModal: true,
+  //   });
+  // };
 
-  handleCloseModal = () => {
-    this.setState({
-      showModal: false,
-      largeImageURL: '' ,
-    });
-  };
+  // handleCloseModal = () => {
+  //   this.setState({
+  //     showModal: false,
+  //     largeImageURL: '' ,
+  //   });
+  // };
 
   render() {
     const { images, isLoading, isError, isEnd, showModal, largeImageURL } = this.state;
@@ -107,7 +107,7 @@ export class App extends Component {
         {isLoading && <Loader />}
         {isError && toast.error('Error fetching images. Please try again.')}
         <Toaster position="top-right" reverseOrder={false} />
-        {showModal && <Modal image={largeImageURL} onClose={this.handleCloseModal} />}        
+        {/* {showModal && <Modal image={largeImageURL} onClose={this.handleCloseModal} />}         */}
       </div>
     );
   }; 
