@@ -97,7 +97,7 @@ export class App extends Component {
   // };
 
   render() {
-    const { images, isLoading, isError, isEnd, showModal, largeImageURL } = this.state;
+    const { images, isLoading, isError, isEnd } = this.state;
 
     return (
       <div className={styles.app}>
